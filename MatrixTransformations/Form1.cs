@@ -37,8 +37,8 @@ namespace MatrixTransformations
                 2, 4,
                 -1, 3);
             Console.WriteLine(m2);
-            Console.WriteLine(m1 + m2); // 3, 4, -1, 4
-            Console.WriteLine(m1 - m2); // -1, -4, 1, -2
+            // Console.WriteLine(m1 + m2); // 3, 4, -1, 4
+            // Console.WriteLine(m1 - m2); // -1, -4, 1, -2
             Console.WriteLine(m2 * m2); // 0, 20, -5, 5
 
             Console.WriteLine(m2 * v3); // 28, 16
