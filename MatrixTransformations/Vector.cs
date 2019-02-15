@@ -5,14 +5,16 @@ namespace MatrixTransformations
 {
     public class Vector
     {
-        public float x, y, w;
+        public float x, y, z, w;
         public Vector() : this(0, 0) { }
-        public Vector(float x, float y) : this(x, y, 1) { }
+        public Vector(float x, float y) : this(x, y, 1, 1) { }
+        public Vector(float x, float y, float z) : this(x, y, z, 1) { }
 
-        public Vector(float x, float y, float w)
+        public Vector(float x, float y, float z, float w)
         {
             this.x = x;
             this.y = y;
+            this.z = z;
             this.w = w;
         }
 

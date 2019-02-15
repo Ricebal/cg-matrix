@@ -8,7 +8,7 @@ namespace MatrixTransformations
 {
     class Matrix
     {
-        float[,] mat = new float[2, 2];
+        float[,] mat = new float[4, 4];
 
         public Matrix() : this(new float[,]{
             {1, 0, 0, 0},
@@ -25,7 +25,13 @@ namespace MatrixTransformations
                           })
         { }
 
-        public Matrix(Vector v) : this(v.x, 0, v.y, 0) { }
+        public Matrix(Vector v) : this(new float[,]{
+            {v.x, 0, 0, 0},
+            {v.y, 1, 0, 0},
+            {v.z, 0, 1, 0},
+            {0, 0, 0, 1}
+        })
+        { }
 
         public Matrix(float[,] mat)
         {
@@ -88,11 +94,12 @@ namespace MatrixTransformations
             Matrix translationMatrix = Matrix.Identity();
             translationMatrix.mat[0, 2] = t.x;
             translationMatrix.mat[1, 2] = t.y;
+            translationMatrix.mat[2, 2] = t.z;
 
             return translationMatrix;
         }
 
-        public static Matrix Rotate(float degrees)
+        public static Matrix RotateZ(float degrees)
         {
             double rad = degrees * (Math.PI / 180);
 
@@ -105,21 +112,45 @@ namespace MatrixTransformations
             return rotationMatrix;
         }
 
+        public static Matrix RotateX(float degrees)
+        {
+            double rad = degrees * (Math.PI / 180);
+
+            Matrix rotationMatrix = Matrix.Identity();
+            rotationMatrix.mat[1, 1] = (float)Math.Cos(rad);
+            rotationMatrix.mat[1, 2] = -(float)Math.Sin(rad);
+            rotationMatrix.mat[2, 1] = (float)Math.Sin(rad);
+            rotationMatrix.mat[2, 2] = (float)Math.Cos(rad);
+
+            return rotationMatrix;
+        }
+
+        public static Matrix RotateY(float degrees)
+        {
+            double rad = degrees * (Math.PI / 180);
+
+            Matrix rotationMatrix = Matrix.Identity();
+            rotationMatrix.mat[0, 0] = (float)Math.Cos(rad);
+            rotationMatrix.mat[0, 2] = (float)Math.Sin(rad);
+            rotationMatrix.mat[2, 0] = -(float)Math.Sin(rad);
+            rotationMatrix.mat[2, 2] = (float)Math.Cos(rad);
+
+            return rotationMatrix;
+        }
+
         public static Matrix operator *(Matrix m1, Matrix m2)
         {
             Matrix res = new Matrix();
-            if (m1.mat.GetLength(0) == m2.mat.GetLength(0))
+            for (int i = 0; i < m1.mat.GetLength(0); i++)
             {
-                for (int i = 0; i < m1.mat.GetLength(0); i++)
+                for (int j = 0; j < m1.mat.GetLength(1); j++)
                 {
-                    for (int j = 0; j < m1.mat.GetLength(1); j++)
-                    {
-                        res.mat[i, j] = 0;
-                        for (int k = 0; k < m1.mat.GetLength(0); k++)
-                            res.mat[i, j] += m1.mat[i, k] * m2.mat[k, j];
-                    }
+                    res.mat[i, j] = 0;
+                    for (int k = 0; k < m1.mat.GetLength(0); k++)
+                        res.mat[i, j] += m1.mat[i, k] * m2.mat[k, j];
                 }
             }
+
 
             return res;
 
