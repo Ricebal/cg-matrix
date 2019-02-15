@@ -11,9 +11,10 @@ namespace MatrixTransformations
         float[,] mat = new float[2, 2];
 
         public Matrix() : this(new float[,]{
-            {1, 0, 0},
-            {0, 1, 0},
-            {0, 0, 1}
+            {1, 0, 0, 0},
+            {0, 1, 0, 0},
+            {0, 0, 1, 0},
+            {0, 0, 0, 1}
         })
         { }
         public Matrix(float m11, float m12,
@@ -84,19 +85,31 @@ namespace MatrixTransformations
 
         public static Matrix Translate(Vector t)
         {
-            Matrix result = new Matrix();
+            Matrix translationMatrix = Matrix.Identity();
+            translationMatrix.mat[0, 2] = t.x;
+            translationMatrix.mat[1, 2] = t.y;
 
+            return translationMatrix;
+        }
 
+        public static Matrix Rotate(float degrees)
+        {
+            double rad = degrees * (Math.PI / 180);
 
-            return result;
+            Matrix rotationMatrix = Matrix.Identity();
+            rotationMatrix.mat[0, 0] = (float)Math.Cos(rad);
+            rotationMatrix.mat[0, 1] = -(float)Math.Sin(rad);
+            rotationMatrix.mat[1, 0] = (float)Math.Sin(rad);
+            rotationMatrix.mat[1, 1] = (float)Math.Cos(rad);
+
+            return rotationMatrix;
         }
 
         public static Matrix operator *(Matrix m1, Matrix m2)
         {
             Matrix res = new Matrix();
-            if (m1.mat.GetLength(0) == m2.mat.GetLength(1))
+            if (m1.mat.GetLength(0) == m2.mat.GetLength(0))
             {
-
                 for (int i = 0; i < m1.mat.GetLength(0); i++)
                 {
                     for (int j = 0; j < m1.mat.GetLength(1); j++)
@@ -106,14 +119,11 @@ namespace MatrixTransformations
                             res.mat[i, j] += m1.mat[i, k] * m2.mat[k, j];
                     }
                 }
+            }
 
-                return res;
-            }
-            else
-            {
-                Console.WriteLine("poop");
-                return res;
-            }
+            return res;
+
+
         }
 
         public static Vector operator *(Matrix m1, Vector v)
