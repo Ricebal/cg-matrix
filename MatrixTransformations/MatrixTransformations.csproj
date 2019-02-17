@@ -60,7 +60,9 @@
     <Compile Include="Vector.cs" />
     <Compile Include="AxisY.cs" />
     <Compile Include="AxisX.cs" />
+    <Compile Include="AxisZ.cs" />
     <Compile Include="Square.cs" />
+    <Compile Include="Cube.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
