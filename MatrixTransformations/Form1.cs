@@ -114,7 +114,6 @@ namespace MatrixTransformations
                 Application.Exit();
             else if (e.KeyCode == Keys.PageUp)
             {
-                Console.WriteLine("pageup");
                 tz = tz + 1;
             }
             else if (e.KeyCode == Keys.PageDown)
@@ -276,22 +275,17 @@ namespace MatrixTransformations
                     break;
                 case 't':
                     theta--;
-                    Console.WriteLine(theta);
                     break;
                 case 'T':
                     theta++;
-                    Console.WriteLine(theta);
                     break;
                 case 'P':
                     phi++;
-                    Console.WriteLine(phi);
                     break;
                 case 'p':
                     phi--;
-                    Console.WriteLine(phi);
                     break;
                 default:
-                    Console.WriteLine(e.KeyChar);
                     break;
             }
             
