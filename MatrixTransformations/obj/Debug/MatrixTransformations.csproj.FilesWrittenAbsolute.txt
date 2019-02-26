@@ -7,3 +7,11 @@
 /home/ricebal/cg-2d/MatrixTransformations/bin/Debug/MatrixTransformations.exe
 /home/ricebal/cg-2d/MatrixTransformations/obj/Debug/MatrixTransformations.exe
 /home/ricebal/cg-2d/MatrixTransformations/obj/Debug/MatrixTransformations.exe.mdb
+/home/ricebal/cg-matrix/MatrixTransformations/obj/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
+/home/ricebal/cg-matrix/MatrixTransformations/obj/Debug/MatrixTransformations.Form1.resources
+/home/ricebal/cg-matrix/MatrixTransformations/obj/Debug/MatrixTransformations.Properties.Resources.resources
+/home/ricebal/cg-matrix/MatrixTransformations/bin/Debug/MatrixTransformations.exe.config
+/home/ricebal/cg-matrix/MatrixTransformations/bin/Debug/MatrixTransformations.exe.mdb
+/home/ricebal/cg-matrix/MatrixTransformations/bin/Debug/MatrixTransformations.exe
+/home/ricebal/cg-matrix/MatrixTransformations/obj/Debug/MatrixTransformations.exe
+/home/ricebal/cg-matrix/MatrixTransformations/obj/Debug/MatrixTransformations.exe.mdb

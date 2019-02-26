@@ -15,41 +15,33 @@ namespace MatrixTransformations
     {
         AxisX x_axis;
         AxisY y_axis;
+        AxisZ z_axis;
         Square square;
         Square square2;
+        Square square3;
+        Square square4;
+        Cube cube;
+
+        float rx, ry, rz, tx, ty, tz = 0;
+        float r = 10;
+        float phi = -10;
+        float theta = -100;
+        float d = 800;
+        float s = 1;
+        int phase = 1;
+        bool isAnimating = false;
 
         public Form1()
         {
             InitializeComponent();
 
-            Vector v1 = new Vector();
-            Console.WriteLine(v1);
-            Vector v2 = new Vector(1, 2);
-            Console.WriteLine(v2);
-            Vector v3 = new Vector(2, 6);
-            Console.WriteLine(v3);
-            Vector v4 = v2 + v3;
-            Console.WriteLine(v4); // 3, 8
-
-            Matrix m1 = new Matrix();
-            Console.WriteLine(m1); // 1, 0, 0, 1
-            Matrix m2 = new Matrix(
-                2, 4,
-                -1, 3);
-            Console.WriteLine(m2);
-            Console.WriteLine(m1 + m2); // 3, 4, -1, 4
-            Console.WriteLine(m1 - m2); // -1, -4, 1, -2
-            Console.WriteLine(m2 * m2); // 0, 20, -5, 5
-
-            Console.WriteLine(m2 * v3); // 28, 16
-
             this.Width = 800;
             this.Height = 600;
 
-            x_axis = new AxisX(200);
-            y_axis = new AxisY(200);
-            square = new Square(Color.Purple, 100);
-            square2 = new Square(Color.Orange, 100);
+            x_axis = new AxisX(3);
+            y_axis = new AxisY(3);
+            z_axis = new AxisZ(3);
+            cube = new Cube(Color.Pink);
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -57,29 +49,53 @@ namespace MatrixTransformations
             List<Vector> vb;
             base.OnPaint(e);
 
-            x_axis.vb = ViewportTransformation(800, 600, x_axis.vb);
-            x_axis.Draw(e.Graphics, x_axis.vb);
-
-            y_axis.vb = ViewportTransformation(800, 600, y_axis.vb);
-            y_axis.Draw(e.Graphics, y_axis.vb);
-
-            square.vb = ViewportTransformation(800, 600, square.vb);
-            square.Draw(e.Graphics, square.vb);
-
-            Matrix s = Matrix.Scale(1.5f);
             vb = new List<Vector>();
-            foreach (Vector v in square2.vb)
-            {
-                Vector v2 = s * v;
-                vb.Add(v2);
-                Console.WriteLine(v2);
+            vb = ViewingPipeline(x_axis.vb);
+            x_axis.Draw(e.Graphics, vb);
+
+            vb = new List<Vector>();
+            vb = ViewingPipeline(y_axis.vb);
+            y_axis.Draw(e.Graphics, vb);
+
+            vb = new List<Vector>();
+            vb = ViewingPipeline(z_axis.vb);
+            z_axis.Draw(e.Graphics, vb);
+
+            Matrix S = Matrix.Scale(s);
+            Matrix T = Matrix.Translate(new Vector(tx, ty, tz));
+            Matrix R = Matrix.RotateX(rx) * Matrix.RotateY(ry) * Matrix.RotateZ(rz);
+
+            Matrix Total = T * R * S;
+            vb = new List<Vector>();
+            List<Vector> result = new List<Vector>();
+
+            foreach(Vector v in cube.vertexbuffer) {
+                Vector vd = Total * v;
+                vb.Add(vd);
             }
 
-            vb = ViewportTransformation(800, 600, vb);
-            square2.Draw(e.Graphics, vb);
+            result = ViewingPipeline(vb);
+            cube.Draw(e.Graphics, result);
         }
 
-        public static List<Vector> ViewportTransformation(float width, float height, List<Vector> vb)
+        public List<Vector> ViewingPipeline(List<Vector> vb) {
+            List<Vector> res = new List<Vector>();
+            Vector vp = new Vector();
+
+            foreach (Vector v in vb) {
+
+                Matrix view = Matrix.View(r, phi, theta);
+                vp = view * v;
+
+                Matrix projection = Matrix.Project(d, vp.z);
+                vp = projection * vp;
+                res.Add(vp);
+            }
+
+            return ViewportTransformation(800, 600, res);
+        }
+
+        public List<Vector> ViewportTransformation(float width, float height, List<Vector> vb)
         {
             List<Vector> result = new List<Vector>();
             float dx = width / 2;
@@ -96,6 +112,188 @@ namespace MatrixTransformations
         {
             if (e.KeyCode == Keys.Escape)
                 Application.Exit();
+            else if (e.KeyCode == Keys.PageUp)
+            {
+                Console.WriteLine("pageup");
+                tz = tz + 1;
+            }
+            else if (e.KeyCode == Keys.PageDown)
+            {
+                tz = tz -1;
+            }
+            else if ( e.KeyCode == Keys.Left)
+            {
+                tx = tx + 1;
+            }
+            else if (e.KeyCode == Keys.Right)
+            {
+                tx = tx - 1;
+            }
+            else if (e.KeyCode == Keys.Up)
+            {
+                ty = ty + 1;
+            }
+            else if (e.KeyCode == Keys.Down)
+            {
+                ty = ty - 1;
+            }
+            this.Refresh();
         }
+
+       private void timer1_Tick(object sender, EventArgs e)
+        {
+            if(phase == 1)
+            {
+                if (s < 1.5)
+                {
+                    s += 0.01f;
+                } else
+                {
+                    phase = -1;
+                }
+                theta--;
+            }
+            else if (phase == -1)
+            {
+                if(s > 1)
+                {
+                    s -= 0.01f;
+                } else
+                {
+                    phase = 2;
+                    s = 1;
+                }
+                theta--;
+            } else if(phase == 2)
+            {
+                if(rx < 45)
+                {
+                    rx++;
+                } else
+                {
+                    phase = -2;
+                }
+                theta--;
+            } else if(phase == -2)
+            {
+                if(rx > 0)
+                {
+                    rx--;
+                } else
+                {
+                    phase = 3;
+                    rx = 0;
+                }
+                theta--;
+            } else if (phase == 3)
+            {
+                if (ry < 45)
+                {
+                    ry++;
+                }
+                else
+                {
+                    phase = -3;
+                }
+            } else if(phase == -3)
+            {
+                if (ry > 0)
+                {
+                    ry--;
+                }
+                else
+                {
+                    phase = 4;
+                    ry = 0;
+                }
+                phi++;
+            } else if(phase == 4)
+            {
+                if(phi > -10)
+                {
+                    phi--;
+                }
+
+                if(theta < -100)
+                {
+                    theta++;
+                }
+
+                if(phi == -10 && theta == -100)
+                {
+                    phase = 1;
+                }
+            }
+
+            this.Refresh();
+        }
+
+        private void Form1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            switch (e.KeyChar)
+            {
+                case 'c':
+                    rx = ry = rz = tx = ty = tz = 0;
+                    s = 1;
+                    phi = -10;
+                    theta = -100;
+                    d = 800;
+                    break;
+                case 'x':
+                    rx = rx + 1;
+                    break;
+                case 'X':
+                    rx = rx - 1;
+                    break;
+                case 'y':
+                    ry = ry + 1;
+                    break;
+                case 'Y':
+                    ry = ry - 1;
+                    break;
+                case 'z':
+                    rz = rz + 1;
+                    break;
+                case 'Z':
+                    rz = rz - 1;
+                    break;
+                case 's':
+                    s = s + 0.1f;
+                    break;
+                case 'S':
+                    s = s -0.1f;
+                    break;
+                case 'a':
+                case 'A':
+                    if(isAnimating){
+                        this.timer1.Stop();
+                    } else {
+                        this.timer1.Start();
+                    }
+                    isAnimating = !isAnimating;
+                    break;
+                case 't':
+                    theta--;
+                    Console.WriteLine(theta);
+                    break;
+                case 'T':
+                    theta++;
+                    Console.WriteLine(theta);
+                    break;
+                case 'P':
+                    phi++;
+                    Console.WriteLine(phi);
+                    break;
+                case 'p':
+                    phi--;
+                    Console.WriteLine(phi);
+                    break;
+                default:
+                    Console.WriteLine(e.KeyChar);
+                    break;
+            }
+            
+            this.Refresh();
+        } 
     }
 }
