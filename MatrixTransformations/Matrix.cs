@@ -27,9 +27,9 @@ namespace MatrixTransformations
 
         public Matrix(Vector v) : this(new float[,]{
             {v.x, 0, 0, 0},
-            {v.y, 1, 0, 0},
-            {v.z, 0, 1, 0},
-            {1, 0, 0, 1}
+            {v.y, 0, 0, 0},
+            {v.z, 0, 0, 0},
+            {v.w, 0, 0, 0}
         })
         { }
 
@@ -152,10 +152,7 @@ namespace MatrixTransformations
                 }
             }
 
-
             return res;
-
-
         }
 
         public static Vector operator *(Matrix m1, Vector v)
@@ -187,8 +184,8 @@ namespace MatrixTransformations
         }
 
         public static Matrix View(float r, float phi, float theta) {
-            float rPhi = phi / 180 * (float)Math.PI;
-            float rTheta = theta / 180 * (float)Math.PI;
+            float rPhi = phi / 180f * (float)Math.PI;
+            float rTheta = theta / 180f * (float)Math.PI;
 
             Matrix result = new Matrix(new float[,]{
                 {-(float)Math.Sin(rTheta), (float)Math.Cos(rTheta), 0, 0},

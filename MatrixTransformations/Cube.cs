@@ -72,7 +72,7 @@ namespace MatrixTransformations
             for (int i = 0; i < 8; i++)
             {
                 PointF p = new PointF(vb[i + 8].x, vb[i + 8].y);
-                g.DrawString(i.ToString(), font, Brushes.Black, p);
+                g.DrawString(i.ToString(), font, new SolidBrush(col), p);
             }
         }
     }   

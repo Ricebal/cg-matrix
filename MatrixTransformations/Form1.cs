@@ -28,6 +28,8 @@ namespace MatrixTransformations
         float theta = -100;
         float d = 800;
         float s = 1;
+        int phase = 1;
+        bool isAnimating = false;
 
         public Form1()
         {
@@ -36,13 +38,9 @@ namespace MatrixTransformations
             this.Width = 800;
             this.Height = 600;
 
-            x_axis = new AxisX(200);
-            y_axis = new AxisY(200);
-            z_axis = new AxisZ(200);
-            square = new Square(Color.Purple, 100);
-            square2 = new Square(Color.Orange, 100);
-            square3 = new Square(Color.Green, 100);
-            square4 = new Square(Color.Pink, 100);
+            x_axis = new AxisX(3);
+            y_axis = new AxisY(3);
+            z_axis = new AxisZ(3);
             cube = new Cube(Color.Pink);
         }
 
@@ -142,10 +140,105 @@ namespace MatrixTransformations
             this.Refresh();
         }
 
+       private void timer1_Tick(object sender, EventArgs e)
+        {
+            if(phase == 1)
+            {
+                if (s < 1.5)
+                {
+                    s += 0.01f;
+                } else
+                {
+                    phase = -1;
+                }
+                theta--;
+            }
+            else if (phase == -1)
+            {
+                if(s > 1)
+                {
+                    s -= 0.01f;
+                } else
+                {
+                    phase = 2;
+                    s = 1;
+                }
+                theta--;
+            } else if(phase == 2)
+            {
+                if(rx < 45)
+                {
+                    rx++;
+                } else
+                {
+                    phase = -2;
+                }
+                theta--;
+            } else if(phase == -2)
+            {
+                if(rx > 0)
+                {
+                    rx--;
+                } else
+                {
+                    phase = 3;
+                    rx = 0;
+                }
+                theta--;
+            } else if (phase == 3)
+            {
+                if (ry < 45)
+                {
+                    ry++;
+                }
+                else
+                {
+                    phase = -3;
+                }
+            } else if(phase == -3)
+            {
+                if (ry > 0)
+                {
+                    ry--;
+                }
+                else
+                {
+                    phase = 4;
+                    ry = 0;
+                }
+                phi++;
+            } else if(phase == 4)
+            {
+                if(phi > -10)
+                {
+                    phi--;
+                }
+
+                if(theta < -100)
+                {
+                    theta++;
+                }
+
+                if(phi == -10 && theta == -100)
+                {
+                    phase = 1;
+                }
+            }
+
+            this.Refresh();
+        }
+
         private void Form1_KeyPress(object sender, KeyPressEventArgs e)
         {
             switch (e.KeyChar)
             {
+                case 'c':
+                    rx = ry = rz = tx = ty = tz = 0;
+                    s = 1;
+                    phi = -10;
+                    theta = -100;
+                    d = 800;
+                    break;
                 case 'x':
                     rx = rx + 1;
                     break;
@@ -170,6 +263,15 @@ namespace MatrixTransformations
                 case 'S':
                     s = s -0.1f;
                     break;
+                case 'a':
+                case 'A':
+                    if(isAnimating){
+                        this.timer1.Stop();
+                    } else {
+                        this.timer1.Start();
+                    }
+                    isAnimating = !isAnimating;
+                    break;
                 case 't':
                     theta--;
                     Console.WriteLine(theta);
@@ -180,11 +282,11 @@ namespace MatrixTransformations
                     break;
                 case 'P':
                     phi++;
-                    Console.WriteLine(theta);
+                    Console.WriteLine(phi);
                     break;
                 case 'p':
                     phi--;
-                    Console.WriteLine(theta);
+                    Console.WriteLine(phi);
                     break;
                 default:
                     Console.WriteLine(e.KeyChar);
