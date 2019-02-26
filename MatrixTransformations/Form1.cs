@@ -22,6 +22,13 @@ namespace MatrixTransformations
         Square square4;
         Cube cube;
 
+        float rx, ry, rz, tx, ty, tz = 0;
+        float r = 10;
+        float phi = -10;
+        float theta = -100;
+        float d = 800;
+        float s = 1;
+
         public Form1()
         {
             InitializeComponent();
@@ -36,7 +43,7 @@ namespace MatrixTransformations
             square2 = new Square(Color.Orange, 100);
             square3 = new Square(Color.Green, 100);
             square4 = new Square(Color.Pink, 100);
-            cube = new Cube(Color.Pink, 100);
+            cube = new Cube(Color.Pink);
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -44,53 +51,53 @@ namespace MatrixTransformations
             List<Vector> vb;
             base.OnPaint(e);
 
-            x_axis.vb = ViewportTransformation(800, 600, x_axis.vb);
-            x_axis.Draw(e.Graphics, x_axis.vb);
-
-            y_axis.vb = ViewportTransformation(800, 600, y_axis.vb);
-            y_axis.Draw(e.Graphics, y_axis.vb);
-
-            z_axis.vb = ViewportTransformation(800, 600, z_axis.vb);
-            z_axis.Draw(e.Graphics, z_axis.vb);
-
-            square.vb = ViewportTransformation(800, 600, square.vb);
-            square.Draw(e.Graphics, square.vb);
-
-            Matrix s = Matrix.Scale(1.5f);
-            Matrix r = Matrix.RotateZ(20);
-            Matrix t = Matrix.Translate(new Vector(100, 100));
+            vb = new List<Vector>();
+            vb = ViewingPipeline(x_axis.vb);
+            x_axis.Draw(e.Graphics, vb);
 
             vb = new List<Vector>();
-            foreach (Vector v in square2.vb)
-            {
-                Vector v2 = s * v;
-                vb.Add(v2);
-            }
-
-            vb = ViewportTransformation(800, 600, vb);
-            square2.Draw(e.Graphics, vb);
+            vb = ViewingPipeline(y_axis.vb);
+            y_axis.Draw(e.Graphics, vb);
 
             vb = new List<Vector>();
-            foreach (Vector v in square3.vb)
-            {
-                Vector v2 = r * v;
-                vb.Add(v2);
-            }
-            vb = ViewportTransformation(800, 600, vb);
-            square3.Draw(e.Graphics, vb);
+            vb = ViewingPipeline(z_axis.vb);
+            z_axis.Draw(e.Graphics, vb);
 
+            Matrix S = Matrix.Scale(s);
+            Matrix T = Matrix.Translate(new Vector(tx, ty, tz));
+            Matrix R = Matrix.RotateX(rx) * Matrix.RotateY(ry) * Matrix.RotateZ(rz);
+
+            Matrix Total = T * R * S;
             vb = new List<Vector>();
-            foreach (Vector v in square4.vb)
-            {
-                Vector v2 = t * v;
-                Console.WriteLine("V2: " + v2);
-                vb.Add(v2);
+            List<Vector> result = new List<Vector>();
+
+            foreach(Vector v in cube.vertexbuffer) {
+                Vector vd = Total * v;
+                vb.Add(vd);
             }
-            vb = ViewportTransformation(800, 600, vb);
-            square4.Draw(e.Graphics, vb);
+
+            result = ViewingPipeline(vb);
+            cube.Draw(e.Graphics, result);
         }
 
-        public static List<Vector> ViewportTransformation(float width, float height, List<Vector> vb)
+        public List<Vector> ViewingPipeline(List<Vector> vb) {
+            List<Vector> res = new List<Vector>();
+            Vector vp = new Vector();
+
+            foreach (Vector v in vb) {
+
+                Matrix view = Matrix.View(r, phi, theta);
+                vp = view * v;
+
+                Matrix projection = Matrix.Project(d, vp.z);
+                vp = projection * vp;
+                res.Add(vp);
+            }
+
+            return ViewportTransformation(800, 600, res);
+        }
+
+        public List<Vector> ViewportTransformation(float width, float height, List<Vector> vb)
         {
             List<Vector> result = new List<Vector>();
             float dx = width / 2;
@@ -107,6 +114,84 @@ namespace MatrixTransformations
         {
             if (e.KeyCode == Keys.Escape)
                 Application.Exit();
+            else if (e.KeyCode == Keys.PageUp)
+            {
+                Console.WriteLine("pageup");
+                tz = tz + 1;
+            }
+            else if (e.KeyCode == Keys.PageDown)
+            {
+                tz = tz -1;
+            }
+            else if ( e.KeyCode == Keys.Left)
+            {
+                tx = tx + 1;
+            }
+            else if (e.KeyCode == Keys.Right)
+            {
+                tx = tx - 1;
+            }
+            else if (e.KeyCode == Keys.Up)
+            {
+                ty = ty + 1;
+            }
+            else if (e.KeyCode == Keys.Down)
+            {
+                ty = ty - 1;
+            }
+            this.Refresh();
         }
+
+        private void Form1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            switch (e.KeyChar)
+            {
+                case 'x':
+                    rx = rx + 1;
+                    break;
+                case 'X':
+                    rx = rx - 1;
+                    break;
+                case 'y':
+                    ry = ry + 1;
+                    break;
+                case 'Y':
+                    ry = ry - 1;
+                    break;
+                case 'z':
+                    rz = rz + 1;
+                    break;
+                case 'Z':
+                    rz = rz - 1;
+                    break;
+                case 's':
+                    s = s + 0.1f;
+                    break;
+                case 'S':
+                    s = s -0.1f;
+                    break;
+                case 't':
+                    theta--;
+                    Console.WriteLine(theta);
+                    break;
+                case 'T':
+                    theta++;
+                    Console.WriteLine(theta);
+                    break;
+                case 'P':
+                    phi++;
+                    Console.WriteLine(theta);
+                    break;
+                case 'p':
+                    phi--;
+                    Console.WriteLine(theta);
+                    break;
+                default:
+                    Console.WriteLine(e.KeyChar);
+                    break;
+            }
+            
+            this.Refresh();
+        } 
     }
 }

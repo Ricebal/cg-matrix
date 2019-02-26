@@ -29,7 +29,7 @@ namespace MatrixTransformations
             {v.x, 0, 0, 0},
             {v.y, 1, 0, 0},
             {v.z, 0, 1, 0},
-            {0, 0, 0, 1}
+            {1, 0, 0, 1}
         })
         { }
 
@@ -92,9 +92,10 @@ namespace MatrixTransformations
         public static Matrix Translate(Vector t)
         {
             Matrix translationMatrix = Matrix.Identity();
-            translationMatrix.mat[0, 2] = t.x;
-            translationMatrix.mat[1, 2] = t.y;
-            translationMatrix.mat[2, 2] = t.z;
+            translationMatrix.mat[0, 3] = t.x;
+            translationMatrix.mat[1, 3] = t.y;
+            translationMatrix.mat[2, 3] = t.z;
+            translationMatrix.mat[3, 3] = 1;
 
             return translationMatrix;
         }
@@ -162,7 +163,7 @@ namespace MatrixTransformations
             Matrix vm = new Matrix(v);
             Matrix m = m1 * vm;
 
-            return new Vector(m.mat[0, 0], m.mat[1, 0]);
+            return new Vector(m.mat[0, 0], m.mat[1, 0], m.mat[2, 0], 1);
         }
 
         public static Matrix Identity()
@@ -173,6 +174,30 @@ namespace MatrixTransformations
         public static Matrix Scale(float s)
         {
             return s * Identity();
+        }
+
+        public static Matrix Project(float distance, float z) {
+            Matrix result = new Matrix(new float[,]{
+                {-(distance/z), 0, 0, 0},
+                {0, -(distance/z), 0, 0},
+                {0, 0, 0, 0},
+                {0, 0, 0, 0}
+            });
+            return result;
+        }
+
+        public static Matrix View(float r, float phi, float theta) {
+            float rPhi = phi / 180 * (float)Math.PI;
+            float rTheta = theta / 180 * (float)Math.PI;
+
+            Matrix result = new Matrix(new float[,]{
+                {-(float)Math.Sin(rTheta), (float)Math.Cos(rTheta), 0, 0},
+                {-(float)Math.Cos(rTheta) * (float)Math.Cos(rPhi), -(float)Math.Cos(rPhi) * (float)Math.Sin(rTheta), (float)Math.Sin(rPhi), 0},
+                {(float)Math.Cos(rTheta) * (float)Math.Sin(rPhi), (float)Math.Sin(rTheta) * (float)Math.Sin(rPhi), (float)Math.Cos(rPhi), -r},
+                {0, 0, 0, 1}
+            });
+
+            return result;
         }
 
         public override string ToString()
