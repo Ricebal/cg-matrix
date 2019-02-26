@@ -34,7 +34,7 @@ namespace MatrixTransformations
         public Form1()
         {
             InitializeComponent();
-
+            UpdateLabel();
             this.Width = 800;
             this.Height = 600;
 
@@ -138,6 +138,7 @@ namespace MatrixTransformations
                 ty = ty - 1;
             }
             this.Refresh();
+            UpdateLabel();
         }
 
        private void timer1_Tick(object sender, EventArgs e)
@@ -226,6 +227,7 @@ namespace MatrixTransformations
             }
 
             this.Refresh();
+            UpdateLabel();
         }
 
         private void Form1_KeyPress(object sender, KeyPressEventArgs e)
@@ -294,6 +296,24 @@ namespace MatrixTransformations
             }
             
             this.Refresh();
+            UpdateLabel();
         } 
+
+        private void UpdateLabel()
+        {
+            this.label1.Text =
+                "Scale: " + s
+                + "\nTranslate: ( " + tx + ", " + ty + ", " + tz + ")"
+                + "\nRotateX: " + rx
+                + "\nRotateY: " + ry
+                + "\nRotateZ: " + rz
+                + '\n'
+                + "\nr: " + r
+                + "\nd: " + d
+                + "\nphi: " + phi
+                + "\ntheta: " + theta
+                + '\n'
+                + "\nPhase: " + phase;
+        }
     }
 }
